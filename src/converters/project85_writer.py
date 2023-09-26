@@ -122,8 +122,8 @@ class Project85Writer(BaseWriter):
             if image.objects:
                 for anno_object in image.objects:
                     annotation = dict()
-                    annotation["id"] = int(anno_object.attributes["ID"])
-                    annotation["image_id"] = int(image.image_id)
+                    annotation["id"] = anno_object.attributes["ID"]
+                    annotation["image_id"] = image.image_id
                     class_name = anno_object.label
                     annotation["category_id"] = self.categories[class_name]
                     annotation_id += 1
@@ -150,7 +150,7 @@ class Project85Writer(BaseWriter):
             pcd_images = []
 
             pcd_image_dict = dict()
-            pcd_image_dict["id"] = int(image.image_id)
+            pcd_image_dict["id"] = image.image_id
             pcd_image_dict["file_name"] = pcd_filename
             pcd_image_dict["license"] = 0
             pcd_image_dict["date_capture"] = utils.get_dict_value(data_labels.meta_data, "task/created")
