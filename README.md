@@ -11,7 +11,6 @@
 3. Install dependencies
 ```commandline
 >pip install -r requirements.txt
->streamlit run startup.py
 ```
 4. Run
 ```commandline
