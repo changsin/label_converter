@@ -4,6 +4,8 @@ import os
 import zipfile
 from pathlib import Path
 
+import chardet
+
 
 def default(obj):
     if hasattr(obj, 'to_json'):
@@ -115,3 +117,11 @@ def zip_folder(folder_path, zip_filename):
                 file_path = os.path.join(root, file)
                 arcname = os.path.relpath(file_path, folder_path)
                 zipf.write(file_path, arcname)
+
+
+def get_encoding(file_path: str):
+    with open(file_path, "rb") as f:
+        data = f.read()
+        encode = chardet.detect(data)
+        return encode.get("encoding")
+
