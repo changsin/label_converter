@@ -1,10 +1,9 @@
 import argparse
+import codecs
 import os.path
 
 import src.common.utils as utils
 from src.common.logger import get_logger
-import csv
-import codecs
 
 logger = get_logger(__name__)
 
@@ -23,15 +22,14 @@ def csv_to_unicode(path_meta: str, path_out: str):
 
     for file_path in files_meta:
         logger.info(f"{file_path}")
-        with open(file_path, 'r') as file_in:
+        with open(file_path, 'r', encoding="latin1") as file_in:
             logger.info(f"{path_out} {os.path.basename(file_path)}")
             unicode_file_path = os.path.join(path_out, os.path.basename(file_path))
             with codecs.open(unicode_file_path, 'w', encoding="utf-8") as file_out:
-                csv_reader = csv.reader(file_in)
-                file_out.write('\xfe\xff')
-                for row in csv_reader:
-                    if row:
-                        file_out.write(str(row))
+                # Read the content of the CSV file and write it to the Unicode file
+                content = file_in.read()
+                # file_out.write("\xfe\xff")
+                file_out.write(content)
 
 
 if __name__ == '__main__':
