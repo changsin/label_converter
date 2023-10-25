@@ -94,13 +94,18 @@ class Project85Writer(BaseWriter):
         for idx, image in enumerate(data_labels.images):
             converted_json = _create_converted_json(current_metadata_dict)
 
+            task_name = data_labels.meta_data["task"]["name"]
+            image_filename = image.name
+            if image_filename.find(task_name) == -1:
+                image_filename = task_name + image_filename
+
             # 1. images
             converted_images = []
             converted_image = dict()
             converted_image["id"] = int(image.image_id)
             converted_image["width"] = image.width
             converted_image["height"] = image.height
-            converted_image["file_name"] = image.name
+            converted_image["file_name"] = image_filename
 
             # 1-1 Add scenario info if metadata are available
             if current_metadata_dict:
@@ -143,9 +148,9 @@ class Project85Writer(BaseWriter):
 
             # 3. pcd_images
             # logger.info(f"## idx is {idx}/{len(cuboid_filenames)}")
-            image_filename_stem = Path(image.name).stem
+            image_filename_stem = Path(image_filename).stem
             filename_tokens = image_filename_stem.split('_')
-            pcd_filename = Path(image.name).stem + ".pcd"
+            pcd_filename = Path(image_filename).stem + ".pcd"
 
             pcd_images = []
 
@@ -169,12 +174,12 @@ class Project85Writer(BaseWriter):
             # 5. write out the converted json to a file
             json_data = json.dumps(converted_json, default=utils.default, ensure_ascii=False, indent=2)
 
-            task_name = data_labels.meta_data["task"]["name"]
             output_folder = os.path.join(path_out, task_name)
             if not os.path.exists(output_folder):
                 os.mkdir(output_folder)
 
             output_filename = os.path.join(output_folder, image_filename_stem + ".json")
+            logger.info(f"{output_filename}")
             utils.to_file(json_data, output_filename)
 
 
