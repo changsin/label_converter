@@ -145,13 +145,11 @@ class Project85Writer(BaseWriter):
                     annotation = dict()
                     annotation_id = anno_object.attributes["ID"]
                     annotation["id"] = annotation_id
-                    # # TODO: id must be int. Right now there are many null ids and alphanumeric IDs
-                    #           These must be fixed
-                    # logger.info(f"\t\tannotation_id {annotation_id}")
-                    # if annotation_id:
-                    #     annotation["id"] = int(annotation_id)
-                    # else:
-                    #     annotation["id"] = annotation_id
+                    if annotation_id and annotation_id.isdigit():
+                        annotation["id"] = int(annotation_id)
+                    else:
+                        logger.error(f"\t\tInvalid annotation_id {annotation_id}")
+                        annotation["id"] = -1
 
                     annotation["image_id"] = int(image.image_id)
                     class_name = anno_object.label
@@ -179,7 +177,7 @@ class Project85Writer(BaseWriter):
             pcd_images = []
 
             pcd_image_dict = dict()
-            pcd_image_dict["id"] = image.image_id
+            pcd_image_dict["id"] = int(image.image_id)
             pcd_image_dict["file_name"] = pcd_filename
             pcd_image_dict["license"] = 0
             pcd_image_dict["date_capture"] = utils.get_dict_value(data_labels.meta_data, "task/created")
