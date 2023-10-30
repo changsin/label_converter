@@ -45,8 +45,9 @@ class Project85Writer(BaseWriter):
     def write(self, file_in: str, file_out: str):
         pass
 
-    def write_85(self, data_labels: DataLabels, path_3d: str, current_metadata_dict: dict, path_out: str) -> None:
-        def _create_converted_json(metadata_dict):
+    def write_85(self, data_labels: DataLabels, path_3d: str,
+                 current_metadata_dict: dict, imu_dict: dict, path_out: str) -> None:
+        def _create_converted_json(metadata_dict, imu_dict):
             """
             create the template for the converted json
             """
@@ -79,7 +80,12 @@ class Project85Writer(BaseWriter):
                 env_dict["decibel"] = metadata_dict["decibel"]
                 # TODO: was "material"
                 env_dict["floor_material"] = metadata_dict["floor"]
+                env_dict["gate_material"] = metadata_dict["door"]
+                env_dict["wall_material"] = metadata_dict["wall"]
                 info_dict["env"] = env_dict
+
+            if imu_dict:
+                info_dict["imu"] = imu_dict
 
             converted_json["info"] = info_dict
 
@@ -88,11 +94,20 @@ class Project85Writer(BaseWriter):
 
             return converted_json
 
+        imu_list = []
+        keys = imu_dict.keys()
+        for idx in range(len(imu_dict["Sequence"])):
+            temp_dict = dict()
+            for key in keys:
+                if key != "Sequence":
+                    temp_dict[key] = float(imu_dict[key][idx])
+            imu_list.append(temp_dict)
+
         cuboid_filenames = utils.glob_files(path_3d, file_type="*.json")
         cuboid_filenames.sort()
 
         for idx, image in enumerate(data_labels.images):
-            converted_json = _create_converted_json(current_metadata_dict)
+            converted_json = _create_converted_json(current_metadata_dict, imu_list[idx])
 
             task_name = data_labels.meta_data["task"]["name"]
             image_filename = image.name
@@ -123,15 +138,24 @@ class Project85Writer(BaseWriter):
 
             # 2. Add annotations
             converted_annotations = []
-            annotation_id = 0
+
+            # logger.info(f"\tprocessing {image_filename}")
             if image.objects:
                 for anno_object in image.objects:
                     annotation = dict()
-                    annotation["id"] = anno_object.attributes["ID"]
-                    annotation["image_id"] = image.image_id
+                    annotation_id = anno_object.attributes["ID"]
+                    annotation["id"] = annotation_id
+                    # # TODO: id must be int. Right now there are many null ids and alphanumeric IDs
+                    #           These must be fixed
+                    # logger.info(f"\t\tannotation_id {annotation_id}")
+                    # if annotation_id:
+                    #     annotation["id"] = int(annotation_id)
+                    # else:
+                    #     annotation["id"] = annotation_id
+
+                    annotation["image_id"] = int(image.image_id)
                     class_name = anno_object.label
                     annotation["category_id"] = self.categories[class_name]
-                    annotation_id += 1
 
                     annotation["bbox"] = anno_object.points[0]
 
@@ -179,7 +203,7 @@ class Project85Writer(BaseWriter):
                 os.mkdir(output_folder)
 
             output_filename = os.path.join(output_folder, image_filename_stem + ".json")
-            logger.info(f"{output_filename}")
+            # logger.info(f"{output_filename}")
             utils.to_file(json_data, output_filename)
 
 
