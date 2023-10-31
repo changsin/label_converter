@@ -53,16 +53,13 @@ class Project85Writer(BaseWriter):
             """
             converted_json = dict()
 
-            licenses = []
             default_license = dict()
             # TODO: hard-coding it for now
             default_license["name"] = "blackolive"
             default_license["id"] = 0
             default_license["url"] = "https://bo.testworks.ai/"
 
-            licenses.append(default_license)
-
-            converted_json["licenses"] = licenses
+            converted_json["license"] = default_license
 
             info_dict = dict()
             info_dict["description"] = utils.get_dict_value(data_labels.meta_data, "task/project")
@@ -74,11 +71,9 @@ class Project85Writer(BaseWriter):
                 env_dict["location"] = metadata_dict["location"]
                 env_dict["date"] = metadata_dict["date"]
                 env_dict["weather"] = metadata_dict["weather"]
-                env_dict["temperature"] = metadata_dict["temperature"]
-                env_dict["lumen"] = metadata_dict["lumen"]
-                # TODO: was "noise"
-                env_dict["decibel"] = metadata_dict["decibel"]
-                # TODO: was "material"
+                env_dict["temperature"] = float(metadata_dict["temperature"])
+                env_dict["lumen"] = float(metadata_dict["lumen"])
+                env_dict["decibel"] = float(metadata_dict["decibel"])
                 env_dict["floor_material"] = metadata_dict["floor"]
                 env_dict["gate_material"] = metadata_dict["door"]
                 env_dict["wall_material"] = metadata_dict["wall"]
@@ -115,7 +110,6 @@ class Project85Writer(BaseWriter):
                 image_filename = task_name + image_filename
 
             # 1. images
-            converted_images = []
             converted_image = dict()
             converted_image["id"] = int(image.image_id)
             converted_image["width"] = image.width
@@ -128,13 +122,11 @@ class Project85Writer(BaseWriter):
                 scenario_dict["id"] = current_metadata_dict["scenario_id"]
                 scenario_dict["start_time"] = current_metadata_dict["scenario_start_time"]
                 scenario_dict["end_time"] = current_metadata_dict["scenario_end_time"]
-                scenario_dict["distance_traveled"] = current_metadata_dict["distance_traveled"]
+                scenario_dict["distance_traveled"] = float(current_metadata_dict["distance_traveled"])
                 scenario_dict["len"] = len(data_labels.images)
                 scenario_dict["index"] = idx
 
                 converted_image["scenario"] = scenario_dict
-
-            converted_images.append(converted_image)
 
             # 2. Add annotations
             converted_annotations = []
@@ -165,7 +157,7 @@ class Project85Writer(BaseWriter):
 
                     converted_annotations.append(annotation)
 
-            converted_json["images"] = converted_images
+            converted_json["image"] = converted_image
             converted_json["annotations"] = converted_annotations
 
             # 3. pcd_images
@@ -174,16 +166,13 @@ class Project85Writer(BaseWriter):
             filename_tokens = image_filename_stem.split('_')
             pcd_filename = Path(image_filename).stem + ".pcd"
 
-            pcd_images = []
-
             pcd_image_dict = dict()
             pcd_image_dict["id"] = int(image.image_id)
             pcd_image_dict["file_name"] = pcd_filename
             pcd_image_dict["license"] = 0
             pcd_image_dict["date_capture"] = utils.get_dict_value(data_labels.meta_data, "task/created")
-            pcd_images.append(pcd_image_dict)
 
-            converted_json["pcd_images"] = pcd_images
+            converted_json["pcd_image"] = pcd_image_dict
 
             # 4. pc_annotations
             # TODO: have to remove extra "00" from cuboid filenames
