@@ -125,3 +125,10 @@ def get_encoding(file_path: str):
         encode = chardet.detect(data)
         return encode.get("encoding")
 
+
+def seconds_to_hhmmss(seconds: int):
+    hours = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+    return f'{hours:02d}:{minutes:02d}:{seconds:02d}'

@@ -19,7 +19,7 @@ convert label files into different formats
 MD_COLUMNS1 = ["site", "location", "date", "address", "floor", "door", "wall"]
 MD_COLUMNS2 = ["weather", "temperature", "lumen", "decibel"]
 MD_COLUMNS3 = ["robot_id", "scenario_id", "pilot_id", "driving_type"]
-MD_COLUMNS4 = ["scenario_start_time", "scenario_end_time", "distance_traveled", "driving_time", "raw_data_filename"]
+MD_COLUMNS4 = ["scenario_start_time", "scenario_end_time", "distance_traveled", "running_time", "raw_data_filename"]
 METADATA_COLUMNS = MD_COLUMNS1 + MD_COLUMNS2 + MD_COLUMNS3 + MD_COLUMNS4
 
 IMU_COLUMNS1 = ["Sequence", "gyroscope_orientation.x", "gyroscope_orientation.y"]
