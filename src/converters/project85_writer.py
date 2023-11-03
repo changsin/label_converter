@@ -63,7 +63,7 @@ class Project85Writer(BaseWriter):
             annotation["id"] = int(annotation_id)
         else:
             logger.error(f"\t\tInvalid annotation_id {annotation_id}")
-            annotation["id"] = -1
+            # annotation["id"] = -1
 
         annotation["image_id"] = image_id
         class_name = anno_dict.label
