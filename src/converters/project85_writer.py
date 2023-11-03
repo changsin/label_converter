@@ -9,7 +9,8 @@ from .base_writer import BaseWriter
 
 logger = get_logger(__name__)
 
-INTERVAL = 3 # seconds
+INTERVAL = 3    # seconds
+OUT_OF_FOCUS = "Out of focus"
 
 
 class Project85Writer(BaseWriter):
@@ -22,6 +23,9 @@ class Project85Writer(BaseWriter):
         self.social_interactions = dict()
         self.interaction_start_time = None
         self.interaction_end_time = None
+
+        # key: image_id, value: true/false
+        self.out_of_focus = dict()
 
     @staticmethod
     def _get_class_attribute_name(meta_data_dict: dict):
@@ -110,23 +114,28 @@ class Project85Writer(BaseWriter):
         # go through all images and labels and mark off social interaction intervals based on image_id
         for idx, image in enumerate(data_labels.images):
             for anno_object in image.objects:
+                image_id = int(image.image_id)
+
+                if anno_object.label == OUT_OF_FOCUS:
+                    logger.info("## out of focus detected")
+                    self.out_of_focus[image_id] = True
+
                 is_social_interaction = anno_object.attributes.get("Interaction")
                 if is_social_interaction:
                     social_interaction_flag = False if is_social_interaction == "off" else True
 
                     if social_interaction_flag:
-                        image_id = int(image.image_id)
                         social_interaction_recorded = self.social_interactions.get(image_id)
                         if not social_interaction_recorded:
                             self.social_interactions[image_id] = social_interaction_flag
-                            logger.info(f"## social_interactions: {self.social_interactions}")
+                            # logger.info(f"## social_interactions: {self.social_interactions}")
         # self.social_interactions should now have { image_id: true }
         # now go through self.social_interactions to find interaction_start_time and interaction_end_time
 
         start_idx, end_idx = -1, -1
         for image_id, is_interaction in self.social_interactions.items():
             if is_interaction:
-                logger.info(f"is_interaction: {image_id} {is_interaction} {start_idx} {end_idx}")
+                # logger.info(f"is_interaction: {image_id} {is_interaction} {start_idx} {end_idx}")
                 if start_idx == -1:
                     start_idx = image_id
                     end_idx = image_id
@@ -140,7 +149,7 @@ class Project85Writer(BaseWriter):
 
             self.interaction_start_time = utils.seconds_to_hhmmss(start_time)
             self.interaction_end_time = utils.seconds_to_hhmmss(end_time)
-            logger.info(f"### {self.interaction_start_time} {self.interaction_end_time}")
+            # logger.info(f"### {self.interaction_start_time} {self.interaction_end_time}")
 
     def write_85(self, data_labels: DataLabels, path_3d: str,
                  current_metadata_dict: dict, imu_dict: dict, path_out: str) -> None:
@@ -190,11 +199,14 @@ class Project85Writer(BaseWriter):
                 image_filename = task_name + image_filename
 
             # 1. images
+            image_id = int(image.image_id)
             converted_image = dict()
-            converted_image["id"] = int(image.image_id)
+            converted_image["id"] = image_id
             converted_image["width"] = image.width
             converted_image["height"] = image.height
             converted_image["file_name"] = image_filename
+            if self.out_of_focus.get(image_id):
+                converted_image["out_of_focus"] = self.out_of_focus[image_id]
 
             # 1-1 Add scenario info if metadata are available
             if current_metadata_dict:
@@ -251,5 +263,3 @@ class Project85Writer(BaseWriter):
             output_filename = os.path.join(output_folder, image_filename_stem + ".json")
             # logger.info(f"{output_filename}")
             utils.to_file(json_data, output_filename)
-
-
