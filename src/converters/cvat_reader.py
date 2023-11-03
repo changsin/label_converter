@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
-import src.common.utils as utils
 
+import src.common.utils as utils
 from .base_reader import BaseReader
 
 BO_SHAPE_TYPES = ['box', 'polygon', 'polyline', 'points', 'face', 'body', 'leftHand', 'rightHand']

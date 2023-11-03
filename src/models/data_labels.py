@@ -5,9 +5,9 @@ import os
 import attr
 
 import src.common.utils as utils
+from src.common.logger import get_logger
 from src.converters.base_reader import CONVERT_ID, CONVERT_VERSION
 from src.models.adq_labels import AdqLabels
-from src.common.logger import get_logger
 
 logger = get_logger(__name__)
 
