@@ -16,6 +16,7 @@ verify project 85 labels
 """
 OUT_OF_FOCUS = "Out of focus"
 
+
 class LabelCountError(Enum):
     No_Label_2D = 1
     No_Label_3D = 2
@@ -33,32 +34,48 @@ class LabelOutOfPlaceError(Enum):
     Invalid_Class_3D = 2
 
 
-CLASS_PERSON = ["person"]
+CAR = "car"
+CHAIR = "chair"
+COUNTER = "counter"
+DESK = "desk"
+DISPLAY_STAND = "display stand"
+FENCE = "fence"
+FIRE_EXTINGUISHER = "fire extinguisher"
+INFORMATION_BOARD = "information board"
+PERSON = "person"
+PILLAR = "pillar"
+SCULPTURE = "sculpture"
+SIGN = "sign"
+TABLE = "table"
+WASTEBASKET = "wastebasket"
+
+
+CLASS_PERSON = [PERSON]
 PLACE_CLASSES_STATIC = {
     # restaurant Large
-    "PL01": ["counter", "table", "chair", "pillar", "information board"],
+    "PL01": [COUNTER, TABLE, CHAIR, PILLAR, INFORMATION_BOARD],
     # exhibit hall
-    "PL02": ["sculpture", "pillar", "wastebasket", "fire extinguisher"],
+    "PL02": [SCULPTURE, PILLAR, WASTEBASKET, FIRE_EXTINGUISHER],
     # gym
-    "PL03": ["table"],
+    "PL03": [TABLE],
     # venue
-    "PL04": ["chair", "wastebasket", "fire extinguisher"],
+    "PL04": [CHAIR, WASTEBASKET, FIRE_EXTINGUISHER],
     # underground mall
-    "PL05": ["chair", "pillar", "fire extinguisher"],
+    "PL05": [CHAIR, PILLAR, FIRE_EXTINGUISHER],
     # indoor parking lot
-    "PL06": ["sign", "car", "pillar", "fire extinguisher"],
+    "PL06": [SIGN, CAR, PILLAR, FIRE_EXTINGUISHER],
     # supermarket
-    "PL07": ["display stand", "information board", "fire extinguisher"],
+    "PL07": [DISPLAY_STAND, INFORMATION_BOARD, FIRE_EXTINGUISHER],
     # restaurant M
-    "PL08": ["table", "chair", "pillar", "wastebasket", "fire extinguisher"],
+    "PL08": [TABLE, CHAIR, PILLAR, WASTEBASKET, FIRE_EXTINGUISHER],
     # bank
-    "PL09": ["chair", "pillar", "wastebasket", "fire extinguisher"],
+    "PL09": [CHAIR, PILLAR, WASTEBASKET, FIRE_EXTINGUISHER],
     # wedding hall
-    "PL10": ["sculpture", "table", "desk", "pillar", "fire extinguisher"],
+    "PL10": [SCULPTURE, TABLE, DESK, PILLAR, FIRE_EXTINGUISHER],
     # terminal
-    "PL11": ["sign", "pillar", "fire extinguisher"],
+    "PL11": [SIGN, PILLAR, FIRE_EXTINGUISHER],
     # church
-    "PL12": ["table", "chair", "desk", "fence", "fire extinguisher"],
+    "PL12": [TABLE, CHAIR, DESK, FENCE, FIRE_EXTINGUISHER],
 }
 
 
