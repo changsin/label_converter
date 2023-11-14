@@ -93,8 +93,16 @@ def convert_project85_labels(path_2d: str, path_3d: str, path_meta: str, path_im
             continue
 
         metadata_dict = load_csv_files(files_meta, task_name, data_type="Meta", columns=METADATA_COLUMNS)
+        if not metadata_dict:
+            logger.error(f"ERROR: Meta data not loaded properly")
+            errors += 1
+            continue
         # logger.info(metadata_dict)
         imu_dict = load_csv_files(files_imu, task_name, data_type="IMU", columns=IMU_COLUMNS)
+        if not imu_dict:
+            logger.error(f"ERROR: IMU data not loaded properly")
+            errors += 1
+            continue
         # logger.info(imu_dict)
 
         p85_writer = Project85Writer()
@@ -104,6 +112,11 @@ def convert_project85_labels(path_2d: str, path_3d: str, path_meta: str, path_im
     logger.info(f"All finished {len(files_2d)} with {errors} errors")
     if len(missing_3d_paths) > 0:
         logger.error(f"Missing 3d path tasks are: {missing_3d_paths}")
+
+    if errors > 0:
+        logger.error(f"ERROR: encountered {errors} total errors")
+
+    logger.info(f"Finished converting {len(files_2d)} 2D files")
 
 
 if __name__ == '__main__':
