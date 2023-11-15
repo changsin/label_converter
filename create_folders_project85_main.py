@@ -60,7 +60,7 @@ def create_folders(path_in: str, path_out: str):
 
     for idx, label_file in enumerate(label_files):
         parent_folder = os.path.basename(os.path.dirname(label_file))
-        tokens = parent_folder.replace("_1_", "").split('_')
+        tokens = parent_folder.replace("_1_", "").replace("_2_", "").split('_')
         # logger.info(tokens)
 
         out_sub_dir = out_dir
@@ -72,6 +72,10 @@ def create_folders(path_in: str, path_out: str):
             out_sub_dir = os.path.join(out_sub_dir, folder)
             if not os.path.exists(out_sub_dir):
                 os.mkdir(out_sub_dir)
+
+        out_sub_dir = os.path.join(out_sub_dir, parent_folder.rstrip('_'))
+        if not os.path.exists(out_sub_dir):
+            os.mkdir(out_sub_dir)
 
         destination_file = os.path.join(out_sub_dir, os.path.basename(label_file))
         logger.info(f"Copying {idx+1}/{len(label_files)} {label_file} to {destination_file}")
